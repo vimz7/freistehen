@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -37,21 +37,33 @@ const draftIcon = L.icon({
   className: 'marker-draft',
 });
 
+function boundsOf(map) {
+  const b = map.getBounds();
+  return {
+    minLat: b.getSouth(),
+    minLon: b.getWest(),
+    maxLat: b.getNorth(),
+    maxLon: b.getEast(),
+  };
+}
+
 function MapEvents({ onMoved, onMapClick, addMode }) {
   const map = useMapEvents({
     moveend() {
-      const b = map.getBounds();
-      onMoved({
-        minLat: b.getSouth(),
-        minLon: b.getWest(),
-        maxLat: b.getNorth(),
-        maxLon: b.getEast(),
-      });
+      onMoved(boundsOf(map));
     },
     click(e) {
       if (addMode) onMapClick(e.latlng);
     },
   });
+
+  // moveend feuert nicht beim ersten Rendern - initiale Bounds separat laden,
+  // sonst bleibt die Karte beim Start leer, bis der Nutzer sie manuell bewegt.
+  useEffect(() => {
+    onMoved(boundsOf(map));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map]);
+
   return null;
 }
 
