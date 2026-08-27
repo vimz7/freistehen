@@ -1,0 +1,17 @@
+{
+  "name": "freistehen-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "API + OSM-Import fuer die freistehen App",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "import:osm": "node src/importOsm.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.9.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}
